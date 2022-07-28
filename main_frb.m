@@ -25,34 +25,36 @@ Q = eye(3);
 Q = reshape(Q, 9, 1);
 
 % damping value
-alpha = 0;
+% alpha = 0.1;
+
+%% numerical parameters
+
+t0 = 0;
+te = 100;
+atol = 1e-13;
+rtol = 1e-13;
 
 %% initialization
 
 y0 = [m0; Q];
 
-LieSol = zeros(3+9, nTime);
-LieSol(:, 1) = y0;
-
-%% numerical parameters
-
-t0 = 0;
-te = 10;
-atol = 1e-6;
-rtol = 1e-6;
+% LieSol = zeros(3+9, nTime);
+% LieSol(:, 1) = y0;
 
 %% equations and useful functions
 
 if exist('alpha','var')
-    f = @(t, y) freeRigidBody(y, inertia, alpha);
+    f = @(y) freeRigidBody(y, inertia, alpha);
 else
-    f = @(t, y) freeRigidBody(y, inertia);
+    f = @(y) freeRigidBody(y, inertia);
 end
+action = @(a, b) actionSO3xR3(a, b);
+exponentialMap = @(x) expSO3xR3(x);
 
 %% solution
 
 options = odeset('AbsTol', atol, 'RelTol', rtol);
-ySol = ode45(f, [t0, te], y0);
+ySol = ode45(@(t, y) f(y), [t0, te], y0);
 
 nTime = size(ySol.x, 2);
 time = linspace(ySol.x(1), ySol.x(end), nTime);
@@ -63,9 +65,9 @@ QSol = deval(ySol, time, 3 + (1:9));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-for i = 2:nTime
-    LieSol(:, i) = LieEuler(f, action, exponentialMap, LieSol(:, i-1), dt);
-end
+% for i = 2:nTime
+%     LieSol(:, i) = LieEuler(f, action, exponentialMap, LieSol(:, i-1), dt);
+% end
 
 %% energy evaluation
 
@@ -105,12 +107,12 @@ ylabel('Kinetic energy', FontSize=16)
 % xlabel('time', FontSize=16)
 % ylabel('spatial angular momenta', FontSize=16)
 
-figure()
-plot(time, vecnorm(mSol), LineWidth=1.5)
-grid on
-title('Norm of Angular Momentum', 'FontSize', 20)
-xlabel('time', FontSize=16)
-ylabel('angular momenta', FontSize=16)
+% figure()
+% plot(time, vecnorm(mSol), LineWidth=1.5)
+% grid on
+% title('Norm of Angular Momentum', 'FontSize', 20)
+% xlabel('time', FontSize=16)
+% ylabel('angular momenta', FontSize=16)
 
 %% animation
 

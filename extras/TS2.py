@@ -136,8 +136,8 @@ def sph2vecs(Y):
 
 # Transform spherical coordinates to cartesian coordinates on S2
 def sph2cart(az, el, r):
-    rcos_theta = r * np.cos(el)
-    x = rcos_theta * np.cos(az)
-    y = rcos_theta * np.sin(az)
+    rcos_phi = r * np.cos(el)
+    x = rcos_phi * np.cos(az)
+    y = rcos_phi * np.sin(az)
     z = r * np.sin(el)
     return x, y, z

@@ -7,7 +7,7 @@ close all
 % inertia tensor
 I1 = rand(1);
 I2 = rand(1);
-if I2 > I1
+if I2 < I1
     tmp = I1;
     I1 = I2;
     I2 = tmp;
@@ -54,7 +54,7 @@ exponentialMap = @(x) expSO3xR3(x);
 %% solution
 
 options = odeset('AbsTol', atol, 'RelTol', rtol);
-ySol = ode45(@(t, y) f(y), [t0, te], y0);
+ySol = ode45(@(t, y) f(y), [t0, te], y0, options);
 
 nTime = size(ySol.x, 2);
 time = linspace(ySol.x(1), ySol.x(end), nTime);

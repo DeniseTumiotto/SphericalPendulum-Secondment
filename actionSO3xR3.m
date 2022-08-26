@@ -1,4 +1,7 @@
 function rslt = actionSO3xR3(q, p)
+%
+% action on SO(3)xR3
+%
 
 v1 = q(1:3);
 R1 = reshape(q(3 + (1:9)), 3, 3);

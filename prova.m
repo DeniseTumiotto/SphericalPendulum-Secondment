@@ -6,13 +6,15 @@ clc
 %% physical parameters
 
 % inertia tensor
-I1 = rand(1);
-I2 = rand(1);
-if I2 < I1
-    tmp = I1;
-    I1 = I2;
-    I2 = tmp;
-end
+% I1 = rand(1);
+% I2 = rand(1);
+% if I2 < I1
+%     tmp = I1;
+%     I1 = I2;
+%     I2 = tmp;
+% end
+I1 = 0.2;
+I2 = 0.5;
 I3 = 1;
 
 inertia = diag([1/I1, 1/I2, 1/I3]);
@@ -26,7 +28,7 @@ Q = eye(3);
 Q = reshape(Q, 9, 1);
 
 % damping value
-alpha = 0;
+alpha = 10;
 
 %% numerical parameters
 

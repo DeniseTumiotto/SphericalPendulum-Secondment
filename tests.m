@@ -10,7 +10,7 @@ N = 6;
 % method = 5 --> closes run
 % method > 5 --> gives error
 
-method = [1 1 2 2 1 1];
+method = 3 .* ones(N,1);
 
 %% TIME and STEPS
 % T = end time of the simulation
@@ -26,17 +26,20 @@ N_TIME = 1e5 * ones(1, N);
 
 k = 0;
 % damp = linspace(10, 1000, N-5);
-damp = [10 10 10 10 1 1];
+damp = [3 3 6 6 10 10];
 
 %% initial conditions
 
 % [~, ~, z0(:, 1)] = initializeZeroVel();
 % [~, ~, z0(:, 2)] = initializeSmallVariation(z0(:, 1));
 z0 = zeros(6, N);
-[~, ~, z0(:, 1)] = initializeZeroVel();
-[~, ~, z0(:, 2)] = initializeSmallVariation(z0(:, 1), 0, 0.1);
+% [~, ~, z0(:, 1)] = initializeZeroVel();
+% [~, ~, z0(:, 2)] = initializeSmallVariation(z0(:, 1), 0, 0.5);
 
-for i = 1:4
+z0(:, 1) = startingValue();
+z0(:, 2) = startingValue();
+
+for i = 1:N/2
     z0(:, 2*(i-1)+1) = z0(:, 1);
     z0(:, 2*i) = z0(:, 2);
 end

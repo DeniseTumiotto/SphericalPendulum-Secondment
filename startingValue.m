@@ -5,29 +5,29 @@ function z0 = startingValue()
 % all txt files in the directory
 files = dir('out/*sol.mat');
 [n, ~] = size(files);
-initList = zeros(6, n);
+initList = cell(n, 1);
 listStr = cell(n+1, 1);
 
 for i = 1:n
     filename = files(i).name;
-    initList = load(strcat('out/', filename));
-    initList = initList.zSol;
+    initList{i} = load(strcat('out/', filename));
+    crrInitList = initList{i}.zSol;
 
-    listStr{i} = strcat('[', num2str(initList(1, i)), '; ', num2str(initList(2, i)), '; ', num2str(initList(3, i)), '; ', ...
-                             num2str(initList(4, i)), '; ', num2str(initList(5, i)), '; ', num2str(initList(6, i)), ']');
+    listStr{i} = strcat('[', num2str(crrInitList(1, 1)), '; ', num2str(crrInitList(2, 1)), '; ', num2str(crrInitList(3, 1)), '; ', ...
+                             num2str(crrInitList(4, 1)), '; ', num2str(crrInitList(5, 1)), '; ', num2str(crrInitList(6, 1)), ']');
 end
 
 listStr{n+1} = 'Insert personal.';
 
 init =  listdlg('PromptString',{'Choose an initialization'}, ...
-    'ListString',listStr, 'SelectionMode', 'single', 'ListSize', [300 160]);
+    'ListString',listStr, 'SelectionMode', 'single', 'ListSize', [500 200]);
 
 if init > n
     answer = inputdlg('Enter six space-separated numbers:', 'Initial values', [1 50]);
     z0 = str2num(answer{1});
     z0 = transpose(z0);
 else
-    z0 = initList(:, init);
+    z0 = initList{init}.zSol(:,1);
 end
 
 end

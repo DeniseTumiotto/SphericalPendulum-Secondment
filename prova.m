@@ -13,8 +13,8 @@ clc
 %     I1 = I2;
 %     I2 = tmp;
 % end
-I1 = 0.2;
-I2 = 0.5;
+I1 = 0.9;
+I2 = 0.98;
 I3 = 1;
 
 inertia = diag([1/I1, 1/I2, 1/I3]);
@@ -28,14 +28,14 @@ Q = eye(3);
 Q = reshape(Q, 9, 1);
 
 % damping value
-alpha = 10;
+alpha = 0;
 
 %% numerical parameters
 
 t0 = 0;
-te = 50;
-atol = 1e-10;
-rtol = 1e-10;
+te = 30;
+atol = 1e-13;
+rtol = 1e-13;
 % method = 'implicit Lie Euler method';
 method = 'implicit midpoint rule';
 

@@ -1,6 +1,6 @@
 %% MAIN FUNCTION FOR THE SOLUTION OF SPHERICAL PENDULUM
-function main(method, N_TIME, k, damp, z0, T)
-clearvars -except method N_TIME k damp z0 T
+function main(method, N_TIME, k, damp, stiff, z0, T)
+clearvars -except method N_TIME k damp stiff z0 T
 %% NUMERICAL PARAMETERS
 % just a comment
 % CHOOSE A METHOD
@@ -34,7 +34,7 @@ end
 % maximal iteration steps for implicit methods
 % tolerance (relative and absolute) for Netwon iteration
 t0 = 0;
-if nargin < 6
+if nargin < 7
     prompt = {'Insert the final time'};
     dlgtitle = 'T end';
     definput = {'1'};
@@ -75,6 +75,12 @@ if nargin < 3
     dims = [1 40];
     damp = inputdlg(prompt,dlgtitle,dims,definput);
     damp = str2double(damp{1});
+    prompt = {'Insert a (non-negative) stiffness value'};
+    dlgtitle = 'Stiffness value';
+    definput = {'0'};
+    dims = [1 40];
+    stiff = inputdlg(prompt,dlgtitle,dims,definput);
+    stiff = str2double(stiff{1});
 end
 
 %% SAVE PARAMETERS TO FILE
@@ -93,13 +99,13 @@ Energy_kinetic = @(q, w) 0.5 * m * cross(w, q)' * cross(w, q);
 Energy_potential = @(q, w) potential(q, L, m);
 
 % RHS OF THE SYSTEM, RESIDUAL AND JACOBIAN FOR IMPLICIT METHODS
-f = @(v) fManiToAlgebra(v, damp, k); 
+f = @(v) fManiToAlgebra(v, damp, k, stiff); 
 action = @(B, input) actionSE3(B, input);
 myRes = @(v0, v, h) residualSE3(v0, v, h, f, action, my_method);
 myJac = @(v0, v, h) jacobianSE3(v0, v, h, f, action, my_method);
 
 %% INITIALIZATION OF THE PROBLEM
-if nargin < 5
+if nargin < 6
     % CHOOSE AN INIZIALIZATION
     init =  listdlg('PromptString',{'Choose an initialization'}, ...
         'ListString',{'Random (q, w)', 'Random q, w=0', ...

@@ -1,4 +1,8 @@
-function animationSphere(sols, params)
+function animationSphere(sols, params, step)
+
+if nargin < 3
+    step = 1;
+end
 
 [n, ~] = size(sols);
 color = ['r', 'b'];
@@ -13,7 +17,7 @@ for m = 1:n
     q = sols{m}(1:3, :);
     steps = params{m}.N_TIME;
     dstep = 1 / steps;
-    for i = 1:steps/200:steps
+    for i = 1:step:steps
         % Plot pendulum at time step i
         plot3([0, q(1,i)], [0, q(2,i)], [0, q(3,i)], '*', 'Color', color(m));
         xlabel("x")

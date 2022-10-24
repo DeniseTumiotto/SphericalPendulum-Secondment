@@ -1,6 +1,6 @@
 %% number of tests
 
-N = 10;
+N = 2;
 
 %% METHOD
 % method = 1 --> explicit Lie Euler
@@ -11,24 +11,24 @@ N = 10;
 % method > 5 --> gives error
 
 % method = [1 1 1 1 1 1];
-method = 2*ones(N,1);
+method = 1*ones(N,1);
 
 %% TIME and STEPS
 % T = end time of the simulation
 % N_TIME = number of steps
-T = 1;
-% N_TIME = 1e5 * ones(1, N);
+T = 10;
+N_TIME = 1e6 * ones(1, N);
 % T = 1;
-N_TIME = logspace(2, 5, N-1);
-N_TIME = ceil(N_TIME);
-N_TIME(end+1) = 1e6;
+% N_TIME = logspace(2, 5, N-1);
+% N_TIME = ceil(N_TIME);
+% N_TIME(end+1) = 1e6;
 
 %% system parameters
 
 k = 0;
 % damp = linspace(10, 1000, N-5);
-damp = 0 * ones(N, 1);
-stiff = 1e1 * ones(N, 1);
+damp = 1 * ones(N, 1);
+stiff = 1e2 * ones(N, 1);
 
 %% initial conditions
 
@@ -37,15 +37,16 @@ stiff = 1e1 * ones(N, 1);
 z0 = zeros(6, N);
 % [~, ~, z0(:, 1)] = initializeZeroVel();
 z0(:, 1) = startingValue();
-for i = 2:N
-    z0(:, i) = z0(:, 1);
-end
-% [~, ~, z0(:, 2)] = initializeSmallVariation(z0(:, 1), 0, 0.1);
-% 
-% for i = 1:4
-%     z0(:, 2*(i-1)+1) = z0(:, 1);
-%     z0(:, 2*i) = z0(:, 2);
+z0(:, 2) = startingValue();
+% for i = 2:N
+%     z0(:, i) = z0(:, 1);
 % end
+% [~, ~, z0(:, 2)] = initializeSmallVariation(z0(:, 1), 0, 0.1);
+
+for i = 1:N-2
+    z0(:, 2*(i-1)+1) = z0(:, 1);
+    z0(:, 2*i) = z0(:, 2);
+end
 
 for i = 1:N
     disp(['(', num2str(i), ')'])

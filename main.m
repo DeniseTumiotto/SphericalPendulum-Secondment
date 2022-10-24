@@ -88,7 +88,7 @@ end
 clear prompt dlgtitle definput dims
 % save the time stamp as a string.
 % format: 'yyyyMMddTHHmmss'
-timestamp = datestr(now,30);
+timestamp = string(datetime('now','format','yyyyMMdd''T''HHmmss'));
 filename = strcat('out/', timestamp, 'prm', '.mat');
 save(filename)
 

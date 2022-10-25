@@ -56,20 +56,20 @@
 
 %% Problem eigenvalues
 
-clearvars
-clc
-
-[s, p] = readUpto(2);
+% clearvars
+% clc
+% 
+% [s, p] = readUpto(2);
 
 % num = @(x, y) x*transpose(y);
 % denom = @(x) 1+transpose(x)*x;
 % dhdy = @(x, y, crrD) [num(x,x)+num(y,y)/crrD num(y,x)/crrD;
 %         num(x,y)/crrD num(x,x)/crrD];
 % 
-for k = 1:2
-q = s{k}(1:3,:);
-w = s{k}(4:6,:);
-sph = vec2sph(q, w);
+% for k = 1:2
+% q = s{k}(1:3,:);
+% w = s{k}(4:6,:);
+% sph = vec2sph(q, w);
 % g = 9.81;
 % d = p{k}.damp;
 % e3 = [0; 0; 1];
@@ -107,4 +107,46 @@ sph = vec2sph(q, w);
 %         end
 %     end
 % end
+% end
+
+%% S2 problem
+
+[s, p] = readUpto(2);
+
+nStep = p{1}.nStep;
+
+distance = zeros(p{1}.nStep,1);
+q1 = zeros(3, p{1}.nStep);
+q2 = zeros(3, p{1}.nStep);
+
+for i = 1:p{1}.nStep
+    q1(:, i) = sph2cart(s{1}(:,i));
+    q2(:, i) = sph2cart(s{2}(:,i));
+    distance(i) = sphArcLen(s{1}(:,i), s{2}(:,i));
+
 end
+
+
+figure()
+plot(p{1}.timeVec, distance, 'LineWidth', 3)
+grid on
+
+% figure()
+% [xS2, yS2, zS2] = sphere(360);
+% h = surf(xS2, yS2, zS2, 'FaceAlpha', 0.1); 
+% h.EdgeColor = 'none';
+% hold on
+% plot3(q1(1,1), q1(2,1), q1(3,1), 'ob', 'MarkerSize', 5, 'MarkerEdgeColor','none', 'MarkerFaceColor', 'b')
+% plot3(q2(1,1), q2(2,1), q2(3,1), 'or', 'MarkerSize', 5, 'MarkerEdgeColor','none', 'MarkerFaceColor', 'r')
+% for i = 2:nStep/100:nStep
+%     % Plot pendulum at time step i
+%     plot3(q1(1, i), q1(2, i), q1(3, i), '*b', 'MarkerSize', 5);
+%     plot3(q2(1, i), q2(2, i), q2(3, i), '*r', 'MarkerSize', 5);
+%     xlabel("x")
+%     ylabel("y")
+%     zlabel("z")
+%     axis equal;
+% end
+
+
+

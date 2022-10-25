@@ -1,7 +1,7 @@
 function rslt = sph2cart(q)
 % Funtion from spherical coordinates to cartesian coordinate on S2
 
-if size(q, 1) == 2
+if size(q, 1) == 2 || size(q, 2) == 2
     q = [1, q(1), q(2)];
 end
 

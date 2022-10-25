@@ -1,4 +1,4 @@
-function sol = NewtonItSE3(residual, jacobian, p, h, max_it, atol, rtol)
+function sol = NewtonIt(residual, jacobian, p, h, max_it, atol, rtol)
 
 % Newton iteration for implicit methods
 % residual is a function to evaluate the RHS of the system

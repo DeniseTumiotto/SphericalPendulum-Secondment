@@ -108,15 +108,3 @@ sph = vec2sph(q, w);
 %     end
 % end
 end
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,7 +1,5 @@
 syms x y z
-syms phi theta
 syms lam mu
-
 
 theta = atan(y/x);
 phi = asin(z);

@@ -5,8 +5,10 @@ tol = 1e-10;
 
 mu = -2;
 lam = -0.1;
-phi0 = pi/2*(2*rand(2,1)-1);
-theta0 = 2*pi*rand(2,1);
+% phi0 = pi/2*(2*rand(2,1)-1);
+% theta0 = 2*pi*rand(2,1);
+phi0 = [0, 0];
+theta0 = [pi/2+0.1, pi/2-0.1];
 y01 = sph2cart([phi0(1);theta0(1)]);
 y02 = sph2cart([phi0(2);theta0(2)]);
 

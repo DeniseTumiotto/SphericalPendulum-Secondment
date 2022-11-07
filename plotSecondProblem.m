@@ -63,7 +63,8 @@ title(['($\phi_0,\theta_0$)=(',num2str(s0(1,2)),', ',num2str(s0(1,3)),'), ', ...
 
 function rslt = exactSol(x0, t)
     phi = exp(-0.1*t)*x0(1);
-    theta = exp(-2*t)*x0(2);
+    theta = 2*atan(1/(exp(t*2)*(1/tan(x0(2)/2))));
+%     theta = exp(-2*t)*x0(2);
     
     rslt = sph2cart([phi,theta]);
 end

@@ -40,5 +40,5 @@ plotSecondProblem(yi1,yi2)
 
 function rslt = matrix(y,lam,mu)
     s = cart2sph(y);
-    rslt = skw([sin(s(3))*lam*s(2); -cos(s(3))*lam*s(2); mu*s(3)]);
+    rslt = skw([sin(s(3))*lam*s(2); -cos(s(3))*lam*s(2); mu*sin(s(3))]);
 end

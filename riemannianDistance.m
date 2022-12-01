@@ -5,13 +5,16 @@ function rslt = riemannianDistance(sols, params)
 sol1 = sols{1};
 sol2 = sols{2};
 
-n1 = params{1}.N_TIME;
-n2 = params{2}.N_TIME;
-
-% d = params{1}.damp;
-
-n = min([n1, n2]);
-
+if nargin > 1
+    n1 = params{1}.N_TIME;
+    n2 = params{2}.N_TIME;
+    
+    % d = params{1}.damp;
+    
+    n = min([n1, n2]);
+else
+    n = min([max(size(sol1)), max(size(sol2))]);
+end
 % grav = 9.81;
 % nSteps = 5;
 % maxIt = 1000;

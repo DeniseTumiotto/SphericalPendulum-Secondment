@@ -1,7 +1,16 @@
-function [sols, dist] = readpy(many)
+function [sols, dist] = readpy(space, many, newFirst)
+% Read python binary files of solutions
+%
+% :param space: which setting are we reading
+% :param many: how many solution one wants to read
+% :param newFirst: start reading from the newest result
+%
+% :returns: cell struct of solutions and riemannian distance
+
+space = strtrim(space);
 
 % all files in the directory + save not duplicate names
-files = dir('out/*_S2_*');
+files = dir(strcat('out/*_', space, '*'));
 nSol = max(size(files));
 j = 1;
 for i = 1:nSol
@@ -13,17 +22,21 @@ for i = 1:nSol
         j = j+1;
     end
 end
-
-if nargin == 0
+% start reading from the newest
+if nargin > 2 && newFirst && j > 2
+    fname = flip(fname);
+end
+% set how many solution to read
+if nargin < 2 || strcmp(many,'all')
     many = j-1;
 end
 
 sols = cell(many, 1);
 dist = cell(many, 1);
-
+% read
 for i = 1:many
-    sols{i} = readNPY(strcat('out/', fname(i,:), '_S2_sols.npy'));
-    dist{i} = readNPY(strcat('out/', fname(i,:), '_S2_dist.npy'));
+    sols{i} = readNPY(strcat('out/', fname(i,:), '_', space, '_sols.npy'));
+    dist{i} = readNPY(strcat('out/', fname(i,:), '_', space, '_dist.npy'));
 end
 
 end

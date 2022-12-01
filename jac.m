@@ -1,4 +1,13 @@
 function J = jac(space, y0, param)
+% evaluation of the jacobian
+% 
+% :param space: which manifold (S2 or TS2)
+% :param y0: current point on the manifold
+% :param param: parameters of the vectorfield
+%
+% :returns: the value of the jacobian of the vector field in y0
+%
+
 
 if strcmp(space,'S2')
     % ATTENZIONE! sto usando il fatto che D(1,1)=D(2,2)

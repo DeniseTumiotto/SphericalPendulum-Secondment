@@ -1,4 +1,4 @@
-function [sols, dist] = readpy(space, many, newFirst)
+function [sols, dist] = readpy(space, many, newFirst, ~, ~)
 % Read python binary files of solutions
 %
 % :param space: which setting are we reading
@@ -32,11 +32,24 @@ if nargin < 2 || strcmp(many,'all')
 end
 
 sols = cell(many, 1);
-dist = cell(many, 1);
-% read
-for i = 1:many
-    sols{i} = readNPY(strcat('out/', fname(i,:), '_', space, '_sols.npy'));
-    dist{i} = readNPY(strcat('out/', fname(i,:), '_', space, '_dist.npy'));
+if nargout > 1
+    dist = cell(many, 1);
+end
+
+if nargin < 4
+    % read solutions
+    for i = 1:many
+        sols{i} = readNPY(strcat('out/', fname(i,:), '_', space, '_sols.npy'));
+        dist{i} = readNPY(strcat('out/', fname(i,:), '_', space, '_dist.npy'));
+    end
+else
+    % read 
+    for i = 1:many
+        sols{i} = readNPY(strcat('out/', fname(i,:), '_', space, '_matD.npy'));
+        if nargin > 4
+            dist{i} = readNPY(strcat('out/', fname(i,:), '_', space, '_matM.npy'));
+        end
+    end
 end
 
 end

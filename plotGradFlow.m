@@ -1,4 +1,12 @@
 function plotGradFlow(y1,y2)
+% plots the solutions of a gradient flow on S2
+% 
+% :param y1: solution 1
+% :param y2: solution 2
+%
+% :returns: plot the two solution on the unitary sphere
+%
+
 
 s0(1,:) = cart2sph(y1(:,1));
 s0(2,:) = cart2sph(y2(:,1));

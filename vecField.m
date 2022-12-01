@@ -1,4 +1,12 @@
 function f = vecField(space, y0, param)
+% evaluation of the vector field
+% 
+% :param space: which manifold (S2 or TS2)
+% :param y0: current point on the manifold
+% :param param: parameters of the vectorfield
+%
+% :returns: the value of the vector field in y0
+%
 
 if strcmp(space,'S2')
     cartcoo = sph2cart(y0);
@@ -11,7 +19,6 @@ if strcmp(space,'S2')
     f(2) = (k2-k1)*cartcoo(1)*cartcoo(2)/(cartcoo(1)^2+cartcoo(2)^2);
 elseif strcmp(space,'TS2')
     f = zeros(4,1);
-
 else
     disp('Not a valid option!')
 end

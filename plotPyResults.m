@@ -101,11 +101,14 @@ end
     end
 
     function [] = plotEig(space, l)
+        ll = max(l,[],2);
         figure()
-        plot(space, l(:,1),'b','LineWidth',3)
-        hold on
-        plot(space, l(:,2),'r','LineWidth',3)
-        title('Eigenvalues of the symmetric part of the Jacobian', 'FontSize',20)
+        plot(space, ll,'b','LineWidth',3)
+%         hold on
+%         plot(space, 0*space,'r','LineWidth',3)
+%         plot(space, l(:,2),'r','LineWidth',3)
+%         title('Eigenvalues of the symmetric part of the Jacobian', 'FontSize',20)
+        title('Max eigenvalue of the symmetric part of the Jacobian', 'FontSize',20)
         xlabel('Parametrer','FontSize',18)
         ylabel('Eigenvalue','FontSize',18)
         grid on

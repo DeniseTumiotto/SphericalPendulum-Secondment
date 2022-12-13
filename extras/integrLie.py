@@ -3,6 +3,21 @@ from numpy.linalg import norm
 from scipy.linalg import expm
 from scipy.optimize import fsolve
 
+def matmul(a,b):
+    if a.shape == (3,) or a.shape == (3,1) or a.shape == (3,3):
+        return a@b
+    else:
+        if a.shape == (6,):
+            a1 = skw(a[:3])
+            a2 = skw(a[3:])
+            # check the sign
+            A = a1@b[:3]
+            B = a1@b[3:]+a2@b[:3]
+        else:
+            A = a[:,:3]@b[:3]
+            B = a[:,-1] + a[:,:3]@b[3:]
+        return np.hstack([A,B])
+
 def skw(x):
     return np.array([[0,-x[2],x[1]],[x[2],0,-x[0]],[-x[1],x[0],0]])
 
@@ -26,7 +41,7 @@ def dexpinvso3(a,b):
     if Theta > 1e-16:
         fun = (1-theta*(np.cos(theta)/np.sin(theta)))/(Theta**2)
     else:
-        fun =  1/12 + Theta**2/720 + Theta**4/(30240)
+        fun =  1/12 + Theta**2/720 + Theta**4/30240
     operator = np.eye(3) - 0.5*aa + fun*aa@aa
     return operator@b
 
@@ -41,16 +56,37 @@ def tantrso3(x):
     rslt = np.eye(3) + fun1*skw(x) + fun2*skw(x)@skw(x)
     return rslt.transpose()
 
+def taninvso3(x):
+    Theta = norm(x)
+    theta = Theta * 0.5
+    if theta > 1e-16:
+        fun = (1-theta*(np.cos(theta)/np.sin(theta)))/(Theta**2)
+    else:
+        fun =  1/12 + Theta**2/720 + Theta**4/30240
+    return np.eye(3) + 0.5*skw(x) + fun*skw(x)@skw(x)
+
+def C2(x):
+    a = np.copy(x[:3])
+    b = np.copy(x[3:])
+    Theta = norm(a)
+    theta = Theta * 0.5
+    if theta > 1e-16:
+        fun = (1-theta*(np.cos(theta)/np.sin(theta)))/(Theta**2)
+    else:
+        fun =  1/12 + Theta**2/720 + Theta**4/30240
+    return 0.5*skw(b) + fun * (skw(b)@skw(a) + skw(a)@skw(b))
+
 def dexpinvse3(a,b):
-    # scrivi qualcosa qui!!
-    return
+    A = taninvso3(a[:3]) # 3,3
+    B = C2(a)            # 3,3
+    return np.block([[A, np.zeros((3,3))],[B, A]])@b
 
 def expse3(x):
     u = np.copy(x[:3])
     v = np.copy(x[3:])
-    A11 = expso3(u) # 3x3
-    A12 = tantrso3(u)@v # 3x1
-    return np.array([A11, A12])
+    A11 = expso3(u)         # 3,3
+    A12 = tantrso3(u)@v     # 3,
+    return np.column_stack([A11, A12])
 
 def implieeul(A, f, y0, h):
     if f.shape == (3,) or f.shape == (3,1):
@@ -59,9 +95,9 @@ def implieeul(A, f, y0, h):
     else:
         dexp = dexpinvse3
         exp = expse3
-    res = lambda x, x0, dt : - x + dexp(x, dt*A(exp(x)@x0))
+    res = lambda x, x0, dt : - x + dexp(x, dt*A(matmul(exp(x),x0)))
     F1 = fsolve(res, f, args=(y0, h))
-    return expm(skw(F1))@y0
+    return matmul(exp(F1),y0)
 
 def implliemidp(A, f, y0, h):
     if f.shape == (3,) or f.shape == (3,1):
@@ -70,9 +106,9 @@ def implliemidp(A, f, y0, h):
     else:
         dexp = dexpinvse3
         exp = expse3
-    res = lambda x, x0, dt : - x + dexp(0.5*x, dt*A(exp(0.5*x)@x0))
+    res = lambda x, x0, dt : - x + dexp(0.5*x, dt*A(matmul(exp(0.5*x),x0)))
     F1 = fsolve(res, f, args=(y0, h))
-    return expm(skw(F1))@y0
+    return matmul(exp(F1),y0)
 
 def impllietrap(A, f, y0, h):
     if f.shape == (3,) or f.shape == (3,1):
@@ -81,6 +117,6 @@ def impllietrap(A, f, y0, h):
     else:
         dexp = dexpinvse3
         exp = expse3
-    res = lambda x, x0, dt : - x + dexp(0.5*x+0.5*x0, dt*A(exp(0.5*x+0.5*x0)@x0))
+    res = lambda x, x0, dt : - x + dexp(0.5*x+0.5*x0, dt*A(matmul(exp(0.5*x+0.5*x0),x0)))
     F1 = fsolve(res, f, args=(y0, h))
-    return expm(0.5*skw(F1)+0.5*skw(y0))@y0
+    return matmul(exp(0.5*(F1+y0)),y0)

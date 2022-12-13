@@ -52,13 +52,13 @@ for i = 1:max(size(sols))
     % print exact flow
     plotGradFlow(x{1}, x{2})
     % explicit
-%     plotGradFlow(x{3}, x{4})
-%     hold on
-%     plot3(0,0,-1,'ok',MarkerSize=5,MarkerFaceColor='k')
+    plotGradFlow(x{3}, x{4})
+    hold on
+    plot3(0,0,-1,'ok',MarkerSize=5,MarkerFaceColor='k')
     % implicit
-%     plotGradFlow(x{5}, x{6})
-%     hold on
-%     plot3(0,0,-1,'ok',MarkerSize=5,MarkerFaceColor='k')
+    plotGradFlow(x{5}, x{6})
+    hold on
+    plot3(0,0,-1,'ok',MarkerSize=5,MarkerFaceColor='k')
 
     % print distance
     if bw
@@ -99,7 +99,7 @@ for i = 1:max(size(sols))
 %         else
 %             disp('Logarithmic norm positive in at least one point!')
 %         end
-        plotEig(tPar,lam)
+%         plotEig(tPar,lam)
     end
     
     if nargout > 0

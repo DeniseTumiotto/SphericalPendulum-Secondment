@@ -3,7 +3,7 @@ from numpy.linalg import norm
 from scipy.linalg import expm
 from scipy.optimize import fsolve
 
-def matmul(a,b):
+def action(a,b):
     if a.shape == (3,) or a.shape == (3,1) or a.shape == (3,3):
         return a@b
     else:
@@ -95,28 +95,28 @@ def implieeul(A, f, y0, h):
     else:
         dexp = dexpinvse3
         exp = expse3
-    res = lambda x, x0, dt : - x + dexp(x, dt*A(matmul(exp(x),x0)))
+    res = lambda x, x0, dt : - x + dexp(x, dt*A(action(exp(x),x0)))
     F1 = fsolve(res, f, args=(y0, h))
-    return matmul(exp(F1),y0)
+    return action(exp(F1),y0)
 
-def implliemidp(A, f, y0, h):
+def impliemidp(A, f, y0, h):
     if f.shape == (3,) or f.shape == (3,1):
         dexp = dexpinvso3
         exp = lambda x: expm(skw(x))
     else:
         dexp = dexpinvse3
         exp = expse3
-    res = lambda x, x0, dt : - x + dexp(0.5*x, dt*A(matmul(exp(0.5*x),x0)))
+    res = lambda x, x0, dt : - x + dexp(0.5*x, dt*A(action(exp(0.5*x),x0)))
     F1 = fsolve(res, f, args=(y0, h))
-    return matmul(exp(F1),y0)
+    return action(exp(F1),y0)
 
-def impllietrap(A, f, y0, h):
+def implietrap(A, f, y0, h):
     if f.shape == (3,) or f.shape == (3,1):
         dexp = dexpinvso3
         exp = lambda x: expm(skw(x))
     else:
         dexp = dexpinvse3
         exp = expse3
-    res = lambda x, x0, dt : - x + dexp(0.5*x+0.5*x0, dt*A(matmul(exp(0.5*x+0.5*x0),x0)))
+    res = lambda x, x0, dt : - x + dexp(0.5*x+0.5*x0, dt*A(action(exp(0.5*x+0.5*x0),x0)))
     F1 = fsolve(res, f, args=(y0, h))
-    return matmul(exp(0.5*(F1+y0)),y0)
+    return action(exp(0.5*(F1+y0)),y0)

@@ -75,7 +75,7 @@ for i = 1:max(size(sols))
     end
     plot(h,dist{i}(1,:),'LineWidth',2.5,'Color',color(mod(k+1,size(color,1)+1),:))
 %     plot(h,ones(max(m),1)*dist{1}(1,1),'LineWidth',2.5,'Color',color(end,:))
-    legend('explicit Lie-Euler','implicit Lie-Euler','exact flow','FontSize',15)
+%     legend('explicit Lie-Euler','implicit Lie-Euler','exact flow','FontSize',15)
     grid on
     xlabel('Time step size', 'FontSize',18)
     ylabel('Riemannian distance', 'FontSize',18)

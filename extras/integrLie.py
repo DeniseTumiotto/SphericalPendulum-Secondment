@@ -38,7 +38,7 @@ def dexpinvso3(a,b):
     Theta = norm(a)
     theta = Theta * 0.5
     aa = skw(a)
-    if Theta > 1e-16:
+    if Theta > 1e-8:
         fun = (1-theta*(np.cos(theta)/np.sin(theta)))/(Theta**2)
     else:
         fun =  1/12 + Theta**2/720 + Theta**4/30240
@@ -47,7 +47,7 @@ def dexpinvso3(a,b):
 
 def tantrso3(x):
     theta = norm(x)
-    if theta > 1e-16:
+    if theta > 1e-14:
         fun1 = (np.cos(theta)-1)/theta**2
         fun2 = (1-(np.sin(theta)/theta))/theta**2
     else:
@@ -59,7 +59,7 @@ def tantrso3(x):
 def taninvso3(x):
     Theta = norm(x)
     theta = Theta * 0.5
-    if theta > 1e-16:
+    if Theta > 1e-8:
         fun = (1-theta*(np.cos(theta)/np.sin(theta)))/(Theta**2)
     else:
         fun =  1/12 + Theta**2/720 + Theta**4/30240
@@ -70,7 +70,7 @@ def C2(x):
     b = np.copy(x[3:])
     Theta = norm(a)
     theta = Theta * 0.5
-    if theta > 1e-16:
+    if Theta > 1e-8:
         fun = (1-theta*(np.cos(theta)/np.sin(theta)))/(Theta**2)
     else:
         fun =  1/12 + Theta**2/720 + Theta**4/30240

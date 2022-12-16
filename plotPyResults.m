@@ -1,4 +1,4 @@
-function [s, d] = plotPyResults(bw,space, many, newFirst)
+function [s, d, I] = plotPyResults(bw,space, many, newFirst)
 % plots the solutions of a gradient flow on S2 and TS2
 % 
 % :param space: which manifold (S2 or TS2)
@@ -67,7 +67,7 @@ for i = 1:max(size(sols))
         color = linspecer(min(m)+1);
     end
     
-    h = linspace(0.1,15,max(m));
+    h = linspace(0.1,10,max(m));
     figure()
     hold on
     for k = 2:min(m)
@@ -109,6 +109,9 @@ end
 
 if nargout > 1
     d = dist;
+    if nargout > 2
+        I = D;
+    end
 end
 
     function rslt = ProjS2(p,q,t)

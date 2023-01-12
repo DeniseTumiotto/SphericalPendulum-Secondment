@@ -110,6 +110,17 @@ def impliemidp(A, f, y0, h):
     F1 = fsolve(res, f, args=(y0, h))
     return action(exp(F1),y0)
 
+# def impliemidp(A, f, y0, h):
+#     if f.shape == (3,) or f.shape == (3,1):
+#         dexp = dexpinvso3
+#         exp = lambda x: expm(skw(x))
+#     else:
+#         dexp = dexpinvse3
+#         exp = expse3
+#     res = lambda x, x0, dt : - x + dexp(0.5*dt*x, A(action(exp(0.5*dt*x),x0)))
+#     F1 = fsolve(res, f, args=(y0, h))
+#     return action(exp(h * F1),y0)
+
 def implietrap(A, f, y0, h):
     if f.shape == (3,) or f.shape == (3,1):
         dexp = dexpinvso3

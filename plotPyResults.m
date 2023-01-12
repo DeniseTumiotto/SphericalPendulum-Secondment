@@ -22,11 +22,11 @@ if nargin < 4
     end
 end
 
-[sols, dist] = readpy(space,many,newFirst);
+[sols, dist, mdist] = readpy(space,many,newFirst);
 if strcmp(space,'S2')
     D = readpy(space,many,newFirst,'D');
-% elseif strcmp(space,'TS2')
-%     [D, ~] = readpy(space,many,newFirst,'D','M');
+elseif strcmp(space,'TS2')
+    [D, ~] = readpy(space,many,newFirst,'D','M');
 end
 
 s = cell(size(sols));
@@ -49,16 +49,20 @@ for i = 1:max(size(sols))
         end
     end
 
-    % print exact flow
-    plotGradFlow(x{1}, x{2})
-    % explicit
-    plotGradFlow(x{3}, x{4})
-    hold on
-    plot3(0,0,-1,'ok',MarkerSize=5,MarkerFaceColor='k')
-    % implicit
-    plotGradFlow(x{5}, x{6})
-    hold on
-    plot3(0,0,-1,'ok',MarkerSize=5,MarkerFaceColor='k')
+%     % print exact flow
+%     plotGradFlow(x{1}, x{2})
+%     % explicit
+%     plotGradFlow(x{3}, x{4})
+%     hold on
+%     plot3(0,0,-1,'ok',MarkerSize=5,MarkerFaceColor='k')
+%     % implicit
+%     plotGradFlow(x{5}, x{6})
+%     hold on
+%     plot3(0,0,-1,'ok',MarkerSize=5,MarkerFaceColor='k')
+%     % midpoint
+%     plotGradFlow(x{7}, x{8})
+%     hold on
+%     plot3(0,0,-1,'ok',MarkerSize=5,MarkerFaceColor='k')
 
     % print distance
     if bw
@@ -75,11 +79,26 @@ for i = 1:max(size(sols))
     end
     plot(h,dist{i}(1,:),'LineWidth',2.5,'Color',color(mod(k+1,size(color,1)+1),:))
 %     plot(h,ones(max(m),1)*dist{1}(1,1),'LineWidth',2.5,'Color',color(end,:))
-%     legend('explicit Lie-Euler','implicit Lie-Euler','exact flow','FontSize',15)
+    legend('explicit Lie-Euler','implicit Lie-Euler', 'implicit Lie Midpoint', 'implicit Lie Trapezoidal','exact flow','FontSize',15)
     grid on
     xlabel('Time step size', 'FontSize',18)
     ylabel('Riemannian distance', 'FontSize',18)
     hold off
+
+    if iscell(mdist) && ~isempty(mdist{i})
+        figure()
+        hold on
+        for k = 1:size(mdist{i},1)
+            plot(h,mdist{i}(k,:),'LineWidth',2.5,'Color',color(mod(k,size(color,1)+1),:))
+        end
+        plot(h,dist{i}(1,:),'LineWidth',2.5,'Color',color(mod(k+1,size(color,1)+1),:))
+        legend('implicit Midpoint','implicit Spherical Midpoint','implicit Lie Midpoint','exact flow','FontSize',15)
+        grid on
+        xlabel('Time step size', 'FontSize',18)
+        ylabel('Riemannian distance', 'FontSize',18)
+        hold off
+    end
+
 
 %     checking contractivity condition
     if strcmp(space,'S2')

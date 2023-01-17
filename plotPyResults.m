@@ -66,20 +66,21 @@ for i = 1:max(size(sols))
 
     % print distance
     if bw
-        color = linspecer(min(m)+2,'gray');
+        color = linspecer(min(m)+3,'gray');
     else
-        color = linspecer(min(m)+1);
+        color = linspecer(min(m)+2);
     end
     
     h = linspace(0.1,10,max(m));
     figure()
     hold on
+    plot(h,ones(max(m),1)*dist{1}(1,1),'LineWidth',2.5,'Color',color(end,:))
     for k = 2:min(m)
         plot(h,dist{i}(k,:),'LineWidth',2.5,'Color',color(mod(k,size(color,1)+1),:))
     end
     plot(h,dist{i}(1,:),'LineWidth',2.5,'Color',color(mod(k+1,size(color,1)+1),:))
-%     plot(h,ones(max(m),1)*dist{1}(1,1),'LineWidth',2.5,'Color',color(end,:))
-    legend('explicit Lie-Euler','implicit Lie-Euler', 'implicit Lie Midpoint', 'implicit Lie Trapezoidal','exact flow','FontSize',15)
+    legend('initial distance','explicit Lie-Euler','implicit Lie-Euler',...
+        'implicit Lie Midpoint', 'implicit Lie Trapezoidal','exact flow','FontSize',15)
     grid on
     xlabel('Time step size', 'FontSize',18)
     ylabel('Riemannian distance', 'FontSize',18)

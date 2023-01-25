@@ -128,6 +128,7 @@ def implietrap(A, f, y0, h):
     else:
         dexp = dexpinvse3
         exp = expse3
-    res = lambda x, x0, dt : - x + dexp(0.5*x+0.5*x0, dt*A(action(exp(0.5*x+0.5*x0),x0)))
+    F2 = dexp(0*f, h*A(action(exp(0*f),y0)))
+    res = lambda x, x0, dt : - x + dexp(0.5*x+0.5*F2, dt*A(action(exp(0.5*x+0.5*F2),x0)))
     F1 = fsolve(res, f, args=(y0, h))
-    return action(exp(0.5*(F1+y0)),y0)
+    return action(exp(0.5*(F1+F2)),y0)

@@ -6,7 +6,7 @@ def midptrule(f, y, y0, h):
     y = fsolve(res, y, args=(y0, h))
     return y
 
-def sphmidpt(f,y,y0,h):
+def sphmidpt(f, y, y0, h):
     res = lambda x, x0, dt: - x + x0 + dt*f((x0+x)/norm(x0+x))
     y = fsolve(res, y, args=(y0, h))
     return y

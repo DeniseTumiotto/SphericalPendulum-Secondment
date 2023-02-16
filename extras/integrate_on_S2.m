@@ -1,4 +1,4 @@
-function integrate_on_S2
+% function integrate_on_S2
 
 ggrav = 9.81;
 d =  0.0;
@@ -56,7 +56,7 @@ figure ( 3 )
 plot ( tt, tstdat(:,1) )
 xlabel ( 't' ),  ylabel ( 'energy' ), set ( gca, 'XLim', [ t0 te ] )
 
-end
+% end
 
 %==============================================================================%
 

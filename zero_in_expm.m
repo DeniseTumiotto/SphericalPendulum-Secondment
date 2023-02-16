@@ -11,7 +11,7 @@ my_field = field(my_x, par{1}, par{2});
 rslt = dexpinv(my_zero, my_field);
 
 disp(rslt)
-disp(skw(Yn))
+disp(par{1}*(Yn*Yn')-Yn*Yn'*par{1})
 
 function y = normalize(y)
     y = y/norm(y);

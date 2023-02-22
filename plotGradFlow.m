@@ -1,4 +1,4 @@
-function plotGradFlow(y1,y2)
+function plotGradFlow(y, small, separate, full)
 % plots the solutions of a gradient flow on S2
 % 
 % :param y1: solution 1
@@ -6,38 +6,67 @@ function plotGradFlow(y1,y2)
 %
 % :returns: plot the two solution on the unitary sphere
 %
+if nargin < 4
+    full = 0;
+    if nargin < 3
+        separate = 0;
+        if nargin < 2
+            small = 360/2;
+        end
+    end
+end
 
+n = size(y,1);
+s0 = cell(n,1);
+color = linspecer(n+2);
 
-s0(1,:) = cart2sph(y1(:,1));
-s0(2,:) = cart2sph(y2(:,1));
+if ~separate
+    figure()
+    % Create sphere surface
+    [xS2, yS2, zS2] = sphere(360);
+    if ~full
+        h = surf(xS2(1:small,:), yS2(1:small,:), zS2(1:small,:), 'FaceAlpha', 0.1); 
+        h.EdgeColor = 'none';
+        hold on
+        plot3(xS2(small,:),yS2(small,:),zS2(small,:),'-k',LineWidth=1)
+    else
+        h = surf(xS2, yS2, zS2, 'FaceAlpha', 0.1); 
+        h.EdgeColor = 'none';
+        hold on
+    end
+end
 
-figure()
-
-% Create sphere surface
-[xS2, yS2, zS2] = sphere(360);
-h = surf(xS2(1:180,:), yS2(1:180,:), zS2(1:180,:), 'FaceAlpha', 0.1); 
-h.EdgeColor = 'none';
-hold on
-plot3(cos(0:0.001:2*pi),sin(0:0.001:2*pi),zeros(size(0:0.001:2*pi)),'-k',LineWidth=1)
-% Plot initial values
-plot3(y1(1,1), y1(2,1), y1(3,1), 'o', 'MarkerSize', 5, ...
-'MarkerFaceColor', 'green', ...
-'MarkerEdgeColor', 'none')
-plot3(y2(1,1), y2(2,1), y2(3,1), 'o', 'MarkerSize', 5, ...
-'MarkerFaceColor', 'red', ...
-'MarkerEdgeColor', 'none')
-plot3(y1(1,:),y1(2,:),y1(3,:), "-o", 'MarkerSize', 3, ...
-'MarkerFaceColor', 'r', 'MarkerEdgeColor', 'none', ...
-'LineWidth', 3,'Color','r')
-plot3(y2(1,:),y2(2,:),y2(3,:), "-o", 'MarkerSize', 3, ...
-'MarkerFaceColor', 'b', 'MarkerEdgeColor', 'none', ...
-'LineWidth', 3,'Color','b')
-
-
-title({['($\phi_0,\theta_0$)=(',num2str(s0(1,2)),', ',num2str(s0(1,3)),'), '], ...
-       ['($\tilde{\phi}_0,\tilde{\theta}_0$)=(',num2str(s0(2,2)),', ',num2str(s0(2,3)),')']}, ...
-        'Interpreter', 'latex','FontSize',24)
-xlabel('x',FontSize=18)
-ylabel('y',FontSize=18)
-zlabel('z',FontSize=18)
+for i = 1:n
+    s0{i} = cart2sph(y{i}(:,1));
+    
+    if separate
+        figure()
+        % Create sphere surface
+        [xS2, yS2, zS2] = sphere(360);
+        if ~full
+            h = surf(xS2(1:small,:), yS2(1:small,:), zS2(1:small,:), 'FaceAlpha', 0.1); 
+            h.EdgeColor = 'none';
+            hold on
+            plot3(xS2(small,:),yS2(small,:),zS2(small,:),'-k',LineWidth=1)
+        else
+            h = surf(xS2, yS2, zS2, 'FaceAlpha', 0.1); 
+            h.EdgeColor = 'none';
+            hold on
+        end
+    end
+    
+    % Plot initial values
+    plot3(y{i}(1,1), y{i}(2,1), y{i}(3,1), 'o', 'MarkerSize', 5, ...
+    'MarkerFaceColor', 'green', ...
+    'MarkerEdgeColor', 'none')
+    plot3(y{i}(1,:),y{i}(2,:),y{i}(3,:), "-o", 'MarkerSize', 3, ...
+    'MarkerEdgeColor', 'none', ...
+    'LineWidth', 3,'Color',color(i,:))    
+end
+plot3(0,0,-1,'ok','MarkerFaceColor','k','MarkerSize',4)
+title('Trajectories for c=0','FontSize',24)
+xlabel('x',FontSize=20)
+ylabel('y',FontSize=20)
+zlabel('z',FontSize=20)
+axis equal
 end

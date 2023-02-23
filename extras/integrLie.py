@@ -15,7 +15,8 @@ def action(a,b):
             B = a1@b[3:]+a2@b[:3]
         else:
             A = a[:,:3]@b[:3]
-            B = a[:,-1] + a[:,:3]@b[3:]
+            # MODIFICHE NON SICURE!!! ...MA ora funziona :)
+            B = a[:,:3]@b[3:] + np.cross(a[:,-1],a[:,:3]@b[:3])
         return np.hstack([A,B])
 
 def skw(x):
@@ -53,7 +54,7 @@ def tantrso3(x):
     else:
         fun1 = - 1.0/2 + theta**2/24 - theta**4/720
         fun2 = 1/6 - theta**2/120 + theta**4/5040
-    rslt = np.eye(3) + fun1*skw(x) + fun2*skw(x)@skw(x)
+    rslt = np.eye(3) - fun1*skw(x) + fun2*skw(x)@skw(x)
     return rslt.transpose()
 
 def taninvso3(x):
@@ -109,17 +110,6 @@ def impliemidp(A, f, y0, h):
     res = lambda x, x0, dt : - x + dexp(0.5*x, dt*A(action(exp(0.5*x),x0)))
     F1 = fsolve(res, f, args=(y0, h))
     return action(exp(F1),y0)
-
-# def impliemidp(A, f, y0, h):
-#     if f.shape == (3,) or f.shape == (3,1):
-#         dexp = dexpinvso3
-#         exp = lambda x: expm(skw(x))
-#     else:
-#         dexp = dexpinvse3
-#         exp = expse3
-#     res = lambda x, x0, dt : - x + dexp(0.5*dt*x, A(action(exp(0.5*dt*x),x0)))
-#     F1 = fsolve(res, f, args=(y0, h))
-#     return action(exp(h * F1),y0)
 
 def implietrap(A, f, y0, h):
     if f.shape == (3,) or f.shape == (3,1):

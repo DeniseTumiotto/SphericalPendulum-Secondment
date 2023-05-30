@@ -1,7 +1,7 @@
 function [sols, dist, middist] = readpy(space, many, newFirst, ~, ~)
 % Read python binary files of solutions
 %
-% :param space: which setting are we reading
+% :param space: which setting are we reading ('S2' or 'TS2')
 % :param many: how many solution one wants to read
 % :param newFirst: start reading from the newest result
 %

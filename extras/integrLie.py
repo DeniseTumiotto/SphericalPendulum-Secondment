@@ -122,3 +122,12 @@ def implietrap(A, f, y0, h):
     res = lambda x, x0, dt : - x + dexp(0.5*x+0.5*F2, dt*A(action(exp(0.5*x+0.5*F2),x0)))
     F1 = fsolve(res, f, args=(y0, h))
     return action(exp(0.5*(F1+F2)),y0)
+
+def geoeul(A, f, y0, h):
+    if f.shape == (3,) or f.shape == (3,1):
+        exp = lambda x: expm(skw(x))
+    else:
+        exp = expse3
+    res = lambda x, x0, dt : - x0 + action(x,exp(-dt*(A(x)@x)))
+    F1 = fsolve(res, f, args=(y0, h))
+    return action(exp(F1),y0)

@@ -1,4 +1,5 @@
 import numpy as np
+from numpy import cos, sin
 from numpy.linalg import norm
 from scipy.linalg import expm
 from scipy.optimize import fsolve
@@ -123,11 +124,20 @@ def implietrap(A, f, y0, h):
     F1 = fsolve(res, f, args=(y0, h))
     return action(exp(0.5*(F1+F2)),y0)
 
-def geoeul(A, f, y0, h):
-    if f.shape == (3,) or f.shape == (3,1):
-        exp = lambda x: expm(skw(x))
-    else:
-        exp = expse3
-    res = lambda x, x0, dt : - x0 + action(x,exp(-dt*(A(x)@x)))
+def geoeul(vecField, f, y0, h):
+    # if f.shape == (3,) or f.shape == (3,1):
+    #     exp = lambda x: expm(skw(x))
+    # else:
+    #     exp = expse3
+    res = lambda x, x0, dt: - x0 + cos(dt*norm(vecField(x))) * x - sin(dt*norm(vecField(x)))/(my_norm(vecField(x))) * vecField(x)
+    # res = lambda x, x0, dt: - x0 + x - dt * sin(np.linalg.norm(dt*vecField(x)))/(np.linalg.norm(dt*vecField(x))) * (skw(vecField(x))@x) + dt**2 * (1-cos(np.linalg.norm(dt*vecField(x))))/((np.linalg.norm(dt*vecField(x)))**2) * (skw(vecField(x))@skw(vecField(x))@x)
+    # res = lambda x, x0, dt: - x0 + 2*x - cos(np.linalg.norm(dt*vecField(x))) * x - dt * sin(np.linalg.norm(dt*vecField(x)))/(np.linalg.norm(dt*vecField(x))) * (skw(vecField(x))@x)
+    # res = lambda x, x0, dt: - x0 + cos(np.linalg.norm(dt*vecField(x))) * x - dt * sin(np.linalg.norm(dt*vecField(x)))/(dt * np.linalg.norm(vecField(x))) * (skw(vecField(x))@x)
     F1 = fsolve(res, f, args=(y0, h))
-    return action(exp(F1),y0)
+    return F1
+
+def my_norm(x):
+    if norm(x) < 1e-10:
+        return 1
+    else:
+        return norm(x)

@@ -59,11 +59,14 @@ for i = 1:n
     plot3(y{i}(1,1), y{i}(2,1), y{i}(3,1), 'o', 'MarkerSize', 5, ...
     'MarkerFaceColor', 'green', ...
     'MarkerEdgeColor', 'none')
+    radius = sqrt(y{i}(1,1)^2+y{i}(2,1)^2);
+    plot3(radius * cos(linspace(0,2*pi,100)), radius * sin(linspace(0,2*pi,100)), y{i}(3,1) * ones(100,1),'-k','LineWidth',1)
     plot3(y{i}(1,:),y{i}(2,:),y{i}(3,:), "-o", 'MarkerSize', 3, ...
     'MarkerEdgeColor', 'none', ...
     'LineWidth', 3,'Color',color(i,:))    
 end
 plot3(0,0,-1,'ok','MarkerFaceColor','k','MarkerSize',4)
+plot3(0,0,1,'ok','MarkerFaceColor','k','MarkerSize',4)
 title('Trajectories for c=0','FontSize',24)
 xlabel('x',FontSize=20)
 ylabel('y',FontSize=20)

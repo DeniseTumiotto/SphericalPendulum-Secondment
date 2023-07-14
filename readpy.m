@@ -53,7 +53,9 @@ if nargin < 4
     % read solutions
     for i = 1:many
         sols{i} = readNPY(strcat('out/', fname(i,:), '_', space, '_sols.npy'));
-        dist{i} = readNPY(strcat('out/', fname(i,:), '_', space, '_dist.npy'));
+        if ~strcmp(space,'isotropy')
+            dist{i} = readNPY(strcat('out/', fname(i,:), '_', space, '_dist.npy'));
+        end
         if any(ismiddist==i)
             middist{i} = readNPY(strcat('out/', fname(i,:), '_', space, '_middist.npy'));
         end

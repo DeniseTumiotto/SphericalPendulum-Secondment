@@ -50,20 +50,21 @@ for i = 1:max(size(sols))
         end
     end
 
-%     % print exact flow
-%     plotGradFlow(x{1}, x{2})
-%     % explicit
-%     plotGradFlow(x{3}, x{4})
-%     hold on
-%     plot3(0,0,-1,'ok',MarkerSize=5,MarkerFaceColor='k')
-%     % implicit
-%     plotGradFlow(x{5}, x{6})
-%     hold on
-%     plot3(0,0,-1,'ok',MarkerSize=5,MarkerFaceColor='k')
-%     % midpoint
-%     plotGradFlow(x{7}, x{8})
-%     hold on
-%     plot3(0,0,-1,'ok',MarkerSize=5,MarkerFaceColor='k')
+    % print exact flow
+    plotGradFlow(x(1:2), 360/2, 0, 1)
+    title('Exact Solution')
+    % explicit
+    plotGradFlow(x(3:4), 360/2, 0, 1)
+    title('ELE Solution')
+    % implicit
+    plotGradFlow(x(5:6), 360/2, 0, 1)
+    title('ILE Solution')
+    % midpoint
+    plotGradFlow(x(7:8), 360/2, 0, 1)
+    title('LMP Solution')
+    % other -- mostly geodesic Euler
+    plotGradFlow(x(9:10), 360/2, 0, 1)
+    title('GIE Solution')
 
     % print distance
     if bw
@@ -81,7 +82,7 @@ for i = 1:max(size(sols))
     end
     plot(h,dist{i}(1,:),'LineWidth',2.5,'Color',color(mod(k+1,size(color,1)+1),:))
     legend('initial distance','explicit Lie-Euler','implicit Lie-Euler',...
-        'implicit Lie Midpoint','exact flow','FontSize',15)
+        'implicit Lie Midpoint', 'geodesic Euler', 'exact flow','FontSize',15)
     grid on
     xlabel('Time step size', 'FontSize',18)
     ylabel('Riemannian distance', 'FontSize',18)

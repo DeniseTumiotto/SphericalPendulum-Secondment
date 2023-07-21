@@ -4,6 +4,11 @@ from numpy.linalg import norm
 from scipy.linalg import expm
 from scipy.optimize import fsolve
 
+def mat2ang(x):
+    x = x.reshape((3,3))
+    theta = np.arccos(0.5 * (x[0,0] + x[1,1] + x[2,2]-1))
+    return theta
+
 def action(a,b):
     if a.shape == (3,) or a.shape == (3,1) or a.shape == (3,3):
         return a@b
@@ -35,6 +40,14 @@ def expso3(x):
         fun1 = 1.0 - theta**2/6
         fun2 = 1.0/2 - theta**2/24 + theta**4/720
     return np.eye(3) + fun1*skw(x) + fun2*skw(x)@skw(x)
+
+def logso3(x):
+    theta = mat2ang(x)
+    if theta > 1e-8:
+        rslt = theta/(2 * sin(theta)) * (x - np.transpose(x))
+    else:
+        rslt = 0.5 * (1 + 1/6 * theta**2 + 7/360 * theta ** 4) * (x - np.transpose(x))
+    return rslt
 
 def dexpinvso3(a,b):
     Theta = norm(a)

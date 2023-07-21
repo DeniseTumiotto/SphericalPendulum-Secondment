@@ -1,7 +1,7 @@
 function [sols, dist, middist] = readpy(space, many, newFirst, ~, ~)
 % Read python binary files of solutions
 %
-% :param space: which setting are we reading
+% :param space: which setting are we reading ('S2' or 'TS2')
 % :param many: how many solution one wants to read
 % :param newFirst: start reading from the newest result
 %
@@ -53,7 +53,9 @@ if nargin < 4
     % read solutions
     for i = 1:many
         sols{i} = readNPY(strcat('out/', fname(i,:), '_', space, '_sols.npy'));
-        dist{i} = readNPY(strcat('out/', fname(i,:), '_', space, '_dist.npy'));
+        if ~strcmp(space,'isotropy')
+            dist{i} = readNPY(strcat('out/', fname(i,:), '_', space, '_dist.npy'));
+        end
         if any(ismiddist==i)
             middist{i} = readNPY(strcat('out/', fname(i,:), '_', space, '_middist.npy'));
         end

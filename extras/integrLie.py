@@ -1,7 +1,13 @@
 import numpy as np
+from numpy import cos, sin
 from numpy.linalg import norm
 from scipy.linalg import expm
 from scipy.optimize import fsolve
+
+def mat2ang(x):
+    x = x.reshape((3,3))
+    theta = np.arccos(0.5 * (x[0,0] + x[1,1] + x[2,2]-1))
+    return theta
 
 def action(a,b):
     if a.shape == (3,) or a.shape == (3,1) or a.shape == (3,3):
@@ -15,7 +21,8 @@ def action(a,b):
             B = a1@b[3:]+a2@b[:3]
         else:
             A = a[:,:3]@b[:3]
-            B = a[:,-1] + a[:,:3]@b[3:]
+            # MODIFICHE NON SICURE!!! ...MA ora funziona :)
+            B = a[:,:3]@b[3:] + np.cross(a[:,-1],a[:,:3]@b[:3])
         return np.hstack([A,B])
 
 def skw(x):
@@ -33,6 +40,14 @@ def expso3(x):
         fun1 = 1.0 - theta**2/6
         fun2 = 1.0/2 - theta**2/24 + theta**4/720
     return np.eye(3) + fun1*skw(x) + fun2*skw(x)@skw(x)
+
+def logso3(x):
+    theta = mat2ang(x)
+    if theta > 1e-8:
+        rslt = theta/(2 * sin(theta)) * (x - np.transpose(x))
+    else:
+        rslt = 0.5 * (1 + 1/6 * theta**2 + 7/360 * theta ** 4) * (x - np.transpose(x))
+    return rslt
 
 def dexpinvso3(a,b):
     Theta = norm(a)
@@ -53,7 +68,7 @@ def tantrso3(x):
     else:
         fun1 = - 1.0/2 + theta**2/24 - theta**4/720
         fun2 = 1/6 - theta**2/120 + theta**4/5040
-    rslt = np.eye(3) + fun1*skw(x) + fun2*skw(x)@skw(x)
+    rslt = np.eye(3) - fun1*skw(x) + fun2*skw(x)@skw(x)
     return rslt.transpose()
 
 def taninvso3(x):
@@ -110,17 +125,6 @@ def impliemidp(A, f, y0, h):
     F1 = fsolve(res, f, args=(y0, h))
     return action(exp(F1),y0)
 
-# def impliemidp(A, f, y0, h):
-#     if f.shape == (3,) or f.shape == (3,1):
-#         dexp = dexpinvso3
-#         exp = lambda x: expm(skw(x))
-#     else:
-#         dexp = dexpinvse3
-#         exp = expse3
-#     res = lambda x, x0, dt : - x + dexp(0.5*dt*x, A(action(exp(0.5*dt*x),x0)))
-#     F1 = fsolve(res, f, args=(y0, h))
-#     return action(exp(h * F1),y0)
-
 def implietrap(A, f, y0, h):
     if f.shape == (3,) or f.shape == (3,1):
         dexp = dexpinvso3
@@ -132,3 +136,21 @@ def implietrap(A, f, y0, h):
     res = lambda x, x0, dt : - x + dexp(0.5*x+0.5*F2, dt*A(action(exp(0.5*x+0.5*F2),x0)))
     F1 = fsolve(res, f, args=(y0, h))
     return action(exp(0.5*(F1+F2)),y0)
+
+def geoeul(vecField, f, y0, h):
+    # if f.shape == (3,) or f.shape == (3,1):
+    #     exp = lambda x: expm(skw(x))
+    # else:
+    #     exp = expse3
+    res = lambda x, x0, dt: - x0 + cos(dt*norm(vecField(x))) * x - sin(dt*norm(vecField(x)))/(my_norm(vecField(x))) * vecField(x)
+    # res = lambda x, x0, dt: - x0 + x - dt * sin(np.linalg.norm(dt*vecField(x)))/(np.linalg.norm(dt*vecField(x))) * (skw(vecField(x))@x) + dt**2 * (1-cos(np.linalg.norm(dt*vecField(x))))/((np.linalg.norm(dt*vecField(x)))**2) * (skw(vecField(x))@skw(vecField(x))@x)
+    # res = lambda x, x0, dt: - x0 + 2*x - cos(np.linalg.norm(dt*vecField(x))) * x - dt * sin(np.linalg.norm(dt*vecField(x)))/(np.linalg.norm(dt*vecField(x))) * (skw(vecField(x))@x)
+    # res = lambda x, x0, dt: - x0 + cos(np.linalg.norm(dt*vecField(x))) * x - dt * sin(np.linalg.norm(dt*vecField(x)))/(dt * np.linalg.norm(vecField(x))) * (skw(vecField(x))@x)
+    F1 = fsolve(res, f, args=(y0, h))
+    return F1
+
+def my_norm(x):
+    if norm(x) < 1e-10:
+        return 1
+    else:
+        return norm(x)

@@ -8,13 +8,13 @@ par = {[2 0 0; 0 2 0; 0 0 1];0};
 my_x = expm(my_zero)*Yn;
 my_field = field(my_x, par{1});
 
-% rslt1 = dexpinv(zeros(3,1), my_field);
-rslt2 = dexpinv(0.5*my_field, my_field);
+rslt1 = dexpinv(zeros(3,1), rand(1)*my_field);
+% rslt2 = dexpinv(0.5*my_field, my_field);
 
-% disp(rslt1)
+disp(rslt1)
 % disp(par{1}*(Yn*Yn')-Yn*Yn'*par{1})
 disp(my_field)
-disp(rslt2)
+% disp(rslt2)
 
 function y = normalize(y)
     y = y/norm(y);
@@ -22,7 +22,8 @@ end
 
 function f = field(x, D)
     f = (eye(3)-x*x')*D*x;
-%     A = x*f'-f*x'+C*skw(x);
+    A = x*f'-f*x';
+    f = [-A(2,3);A(1,3);-A(1,2)];
 end
 
 function F = dexpinv(a,b)

@@ -1,7 +1,8 @@
 close all
 % Energy and Gradient Functions
 E = @(q,D) 0.5*q.'*D*q;
-grad = @(q,D,f) - D*q + 2*f(q,D)*q;
+% grad = @(q,D,f) - D*q + 2*f(q,D)*q;
+grad = @(q,D,f) cross([0; 0; 1],q);
 
 % D MATRIX
 a = 0.5;

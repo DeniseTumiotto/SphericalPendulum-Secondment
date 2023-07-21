@@ -1,7 +1,6 @@
 import numpy as np
 from numpy import cos, sin
 from numpy.linalg import norm
-from scipy.linalg import expm
 from scipy.optimize import fsolve
 
 def mat2ang(x):
@@ -96,7 +95,7 @@ class Lie_RK:
         self.s = stages
         self.h = dt
     
-    def integrate(self, vec_field, initial_guess):
+    def explicit_integrate(self, vec_field, initial_guess):
         theta  = np.zeros(( 3, self.s))
         om     = np.zeros(( 3, self.s))
         r      = np.zeros(( 9, self.s))
@@ -127,3 +126,29 @@ class Lie_RK:
         rslt_R  = expso3(theta_plus) @ initial_guess['r0']
 
         return rslt_R.reshape((9, )), om_plus
+    
+    def stage(self, om, theta, r0, om0, vec_field):
+        rslt = np.zeros(( (3+3)*self.s))
+        for i in range(self.s):
+            rslt[3*i:3*i+3] = np.copy(om0)
+            for j in range(self.s):
+                rslt[3*i:3*i+3]                   = rslt[3*i:3*i+3]                   + self.h * self.a[i,j] * vec_field(expso3(theta[3*i:3*i+3])@r0.reshape((3,3)), om[3*i:3*i+3])
+                rslt[3*self.s+3*i:3*self.s+3*i+3] = rslt[3*self.s+3*i:3*self.s+3*i+3] + self.h * self.a[i,j] * (taninvso3(theta[3*i:3*i+3]) @ om[3*i:3*i+3])
+        return rslt
+
+    def implicit_integrate(self, vec_field, initial_guess):
+        om_theta   = np.zeros(( (3+3)*self.s, ))
+        om_plus    = np.copy(initial_guess['om0'])
+        theta_plus = np.zeros(( 3, ))
+
+        res = lambda x: - x + self.stage(x[:3*self.s], x[3*self.s:], initial_guess['r0'], initial_guess['om0'], vec_field)
+        om_theta = fsolve(res, om_theta)
+
+        for i in range(self.s):
+            theta_plus = theta_plus + self.h * self.b[i] * om_theta[3*self.s+3*i:3*self.s+3*i+3]
+            om_plus    = om_plus    + self.h * self.b[i] * om_theta[3*i:3*i+3]
+
+        rslt_R  = expso3(theta_plus) @ initial_guess['r0']
+
+        return rslt_R.reshape((9, )), om_plus
+    

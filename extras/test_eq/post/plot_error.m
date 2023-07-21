@@ -25,9 +25,12 @@ for i = 1:n
 end
 
 figure()
-loglog(time_vec, R_err, 'LineWidth',3)
+loglog(time_vec, R_err, 'o-', 'LineWidth',3,'DisplayName','R')
 hold on
-loglog(time_vec, w_err, 'LineWidth',3)
-loglog(time_vec, time_vec, 'k:')
+loglog(time_vec, w_err, 'o-', 'LineWidth',3, 'DisplayName','\omega')
+loglog(time_vec, time_vec*(R_err(end)/time_vec(end)), 'k-', 'LineWidth', 1, 'DisplayName','1^{st} order')
+loglog(time_vec, time_vec.^2*(R_err(end)/time_vec(end)^2), 'k-', 'LineWidth', 1, 'DisplayName','2^{nd} order')
+legend('Location','best','FontSize',16)
+grid on
 
 end

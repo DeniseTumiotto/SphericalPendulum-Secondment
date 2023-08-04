@@ -16,18 +16,20 @@ def skwinv(x):
 
 def expso3(x):
     theta = norm(x)
-    if theta > 1e-16:
+    if theta > 1e-4:
         fun1 = np.sin(theta)/theta
-        fun2 = (1-np.cos(theta))/theta**2
     else:
         fun1 = 1.0 - theta**2/6
+    if theta > 1e-2:
+        fun2 = (1-np.cos(theta))/theta**2
+    else:
         fun2 = 1.0/2 - theta**2/24 + theta**4/720
     return np.eye(3) + fun1*skw(x) + fun2*skw(x)@skw(x)
 
 def logso3(x):
     x = x.reshape((3,3))
     theta = mat2ang(x)
-    if theta > 1e-8:
+    if theta > 1e-4:
         rslt = theta/(2 * sin(theta)) * skwinv(x - np.transpose(x))
     else:
         rslt = 0.5 * (1 + 1/6 * theta**2 + 7/360 * theta ** 4) * skwinv(x - np.transpose(x))
@@ -58,7 +60,7 @@ def tantrso3(x):
 def taninvso3(x):
     Theta = norm(x)
     theta = Theta * 0.5
-    if Theta > 1e-8:
+    if Theta > 1e-2:
         fun = (1-theta*(np.cos(theta)/np.sin(theta)))/(Theta**2)
     else:
         fun =  1/12 + Theta**2/720 + Theta**4/30240

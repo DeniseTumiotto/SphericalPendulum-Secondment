@@ -7,6 +7,7 @@ import datetime
 import pickle
 import time
 import winsound
+import seaborn as sns
 
 def is_pos_def(x):
     return np.all(np.linalg.eigvals(x) > 0)
@@ -26,6 +27,11 @@ def gie(y, y0, h, data_Y, pp):
     n = y.size
     res = lambda x, x0, dt, yy, p : (- x0 + exponential(x, dt, grad_V(x, yy, p))).reshape(n)
     rslt = fsolve(res, y, args=(y0, h, data_Y, pp))
+    return rslt
+
+def expInt(y, y0, h, data_Y, pp):
+    n = y.size
+    rslt = exponential(y0.reshape((n,)), h, grad_V(y.reshape((n,)), data_Y, pp)).reshape(n)
     return rslt
 
 def exponential(x, t, v):
@@ -57,7 +63,7 @@ def grad_V(x,y, param):
         rslt = rslt + param * 0.5 * my_grad(x, y[i])
     return rslt
 
-k = 3
+k = 5
 n = 2
 epsilon = 1e-5
 Y = []
@@ -67,20 +73,25 @@ for i in range(k):
     Y.append(A.transpose() @ A + epsilon * np.eye(n))
 
 t0 = 0
-te = 10
-dt = 1e-3
+dt = 1e-1
+te = 2 + dt
 my_time = np.arange(t0, te, dt)
 time_tosave = my_time.tolist()
 sol1 = []
 sol2 = []
+sol_expl1 = []
+sol_expl2 = []
 dist = []
+dist_expl = []
 
 A0 = 2 * np.random.rand(n, n) - 1
 Y0 = A0.transpose() @ A0 + epsilon * np.eye(n)
 sol1.append(Y0)
+sol_expl1.append(Y0)
 A0 = 2 * np.random.rand(n, n) - 1
 Y0 = A0.transpose() @ A0 + epsilon * np.eye(n)
 sol2.append(Y0)
+sol_expl2.append(Y0)
 # dist.append(distance(sol1[0], sol2[0]))
 
 my_param = 1.0
@@ -91,32 +102,41 @@ with alive_bar(my_time.size, bar = 'smooth') as bar:
     for counter, the_time in enumerate(my_time):
         crr_sol1 = gie(sol1[counter], sol1[0], the_time, Y, my_param)
         crr_sol2 = gie(sol2[counter], sol2[0], the_time, Y, my_param)
+        crr_sol_expl1 = expInt(sol1[0], sol1[0], the_time, Y, my_param)
+        crr_sol_expl2 = expInt(sol2[0], sol2[0], the_time, Y, my_param)
         if not is_pos_def(crr_sol1.reshape((n, n))):
             print('Not a pos def matrix!')
         sol1.append(crr_sol1.reshape((n, n)))
         sol2.append(crr_sol2.reshape((n, n)))
+        sol_expl1.append(crr_sol_expl1.reshape((n, n)))
+        sol_expl2.append(crr_sol_expl2.reshape((n, n)))
         dist.append(distance(sol1[counter+1], sol2[counter+1]))
+        dist_expl.append(distance(sol_expl1[counter+1], sol_expl2[counter+1]))
         bar()
 
-now = datetime.datetime.now().strftime('%Y%m%dT%H%M%S')
+# now = datetime.datetime.now().strftime('%Y%m%dT%H%M%S')
 
-fileName = open('C:/Users/denis/Desktop/PHD/code/SphericalPendulum-Secondment/out/'+now+'dist.pkl', 'wb')
-pickle.dump(dist, fileName, -1)
-fileName.close()
-fileName = open('C:/Users/denis/Desktop/PHD/code/SphericalPendulum-Secondment/out/'+now+'time.pkl', 'wb')
-pickle.dump(time_tosave, fileName, -1)
-fileName.close()
+# fileName = open('C:/Users/denis/Desktop/PHD/code/SphericalPendulum-Secondment/out/'+now+'dist.pkl', 'wb')
+# pickle.dump(dist, fileName, -1)
+# fileName.close()
+# fileName = open('C:/Users/denis/Desktop/PHD/code/SphericalPendulum-Secondment/out/'+now+'time.pkl', 'wb')
+# pickle.dump(time_tosave, fileName, -1)
+# fileName.close()
 
 # plot distance
 
-# plt.rcParams["figure.figsize"] = [10.00, 6.00]
+plt.rcParams["figure.figsize"] = [10.00, 6.00]
 
-# fig1 = plt.figure()
-# plt.plot(np.append(my_time, te), dist, label='flow distance')
-# plt.plot(np.append(my_time, te), dist[0]*np.ones((my_time.size + 1, )), label='initial distance')
-# plt.legend()
-# plt.grid()
-
-# plt.show()
+fig1 = plt.figure(figsize=(8,4))
+sns.set_style("darkgrid")
+# plt.plot(my_time, dist, label='flow distance')
+# plt.plot(my_time, dist[0]*np.ones((my_time.size, )), label='initial distance')
+plt.plot(my_time, dist_expl, linewidth=2, label='explicit integrator')
+plt.plot(my_time, dist, linewidth=2, label='GIE')
+plt.legend()
+plt.grid(True)
+plt.xlabel('h')
+plt.ylabel('d')
+plt.savefig('SPD_example.pdf')
 
 winsound.PlaySound("SystemExit", winsound.SND_ALIAS)

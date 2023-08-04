@@ -1,7 +1,6 @@
 import numpy as np
 from numpy import cos, sin
 from numpy.linalg import norm
-from scipy.linalg import expm
 from scipy.optimize import fsolve
 
 def mat2ang(x):
@@ -17,18 +16,20 @@ def skwinv(x):
 
 def expso3(x):
     theta = norm(x)
-    if theta > 1e-16:
+    if theta > 1e-4:
         fun1 = np.sin(theta)/theta
-        fun2 = (1-np.cos(theta))/theta**2
     else:
         fun1 = 1.0 - theta**2/6
+    if theta > 1e-2:
+        fun2 = (1-np.cos(theta))/theta**2
+    else:
         fun2 = 1.0/2 - theta**2/24 + theta**4/720
     return np.eye(3) + fun1*skw(x) + fun2*skw(x)@skw(x)
 
 def logso3(x):
     x = x.reshape((3,3))
     theta = mat2ang(x)
-    if theta > 1e-8:
+    if theta > 1e-4:
         rslt = theta/(2 * sin(theta)) * skwinv(x - np.transpose(x))
     else:
         rslt = 0.5 * (1 + 1/6 * theta**2 + 7/360 * theta ** 4) * skwinv(x - np.transpose(x))
@@ -59,7 +60,7 @@ def tantrso3(x):
 def taninvso3(x):
     Theta = norm(x)
     theta = Theta * 0.5
-    if Theta > 1e-8:
+    if Theta > 1e-2:
         fun = (1-theta*(np.cos(theta)/np.sin(theta)))/(Theta**2)
     else:
         fun =  1/12 + Theta**2/720 + Theta**4/30240
@@ -96,7 +97,7 @@ class Lie_RK:
         self.s = stages
         self.h = dt
     
-    def integrate(self, vec_field, initial_guess):
+    def explicit_integrate(self, vec_field, initial_guess):
         theta  = np.zeros(( 3, self.s))
         om     = np.zeros(( 3, self.s))
         r      = np.zeros(( 9, self.s))
@@ -127,3 +128,29 @@ class Lie_RK:
         rslt_R  = expso3(theta_plus) @ initial_guess['r0']
 
         return rslt_R.reshape((9, )), om_plus
+    
+    def stage(self, om, theta, r0, om0, vec_field):
+        rslt = np.zeros(( (3+3)*self.s))
+        for i in range(self.s):
+            rslt[3*i:3*i+3] = np.copy(om0)
+            for j in range(self.s):
+                rslt[3*i:3*i+3]                   = rslt[3*i:3*i+3]                   + self.h * self.a[i,j] * vec_field(expso3(theta[3*i:3*i+3])@r0.reshape((3,3)), om[3*i:3*i+3])
+                rslt[3*self.s+3*i:3*self.s+3*i+3] = rslt[3*self.s+3*i:3*self.s+3*i+3] + self.h * self.a[i,j] * (taninvso3(theta[3*i:3*i+3]) @ om[3*i:3*i+3])
+        return rslt
+
+    def implicit_integrate(self, vec_field, initial_guess):
+        om_theta   = np.zeros(( (3+3)*self.s, ))
+        om_plus    = np.copy(initial_guess['om0'])
+        theta_plus = np.zeros(( 3, ))
+
+        res = lambda x: - x + self.stage(x[:3*self.s], x[3*self.s:], initial_guess['r0'], initial_guess['om0'], vec_field)
+        om_theta = fsolve(res, om_theta)
+
+        for i in range(self.s):
+            theta_plus = theta_plus + self.h * self.b[i] * om_theta[3*self.s+3*i:3*self.s+3*i+3]
+            om_plus    = om_plus    + self.h * self.b[i] * om_theta[3*i:3*i+3]
+
+        rslt_R  = expso3(theta_plus) @ initial_guess['r0']
+
+        return rslt_R.reshape((9, )), om_plus
+    

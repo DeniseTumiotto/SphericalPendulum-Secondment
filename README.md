@@ -1,8 +1,7 @@
 # Contractivity on Riemaniann Manifold - A test case
 ## Project collaboration MLU - NTNU
 ### Theory
-The theoretical background for the study can be found in [Note](https://www.overleaf.com/)
->Article not yet available!
+The theoretical background for the study can be found in the [paper](https://www.aimsciences.org//article/doi/10.3934/jcd.2024002)
 
 ### Code
 
@@ -34,4 +33,3 @@ Given the solutions and the geodesics, one can plot and visualized the trajector
   
 The input requires two solutions and (optionally) the geodesics.
 The output is  a vector of the distance in the Riemaniann Manifold at each time step of the two solutions.  
-<sub><sup>_Still have to check the correctness of the function._</sub></sup>
